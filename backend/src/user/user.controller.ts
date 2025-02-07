@@ -11,8 +11,8 @@ export class UserController {
     return this.userService.Login(user, res, req);
   }
 
-  @Throttle({ default: { limit: 2, ttl: 60000 } })
   @Get('register')
+  @Throttle({ default: { limit: 2, ttl: 60000 } })
   async Register(@Res() res, @Req() req) {
     return this.userService.Register(res, req);
   }

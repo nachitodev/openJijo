@@ -13,6 +13,7 @@ model User {
   password   String
   role       Role
   banned     Json?
+  modName    String?
   ips        String[]
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt

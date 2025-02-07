@@ -1,4 +1,4 @@
-import { verifyJWT, signJWT } from '@/utils/jwt';
+import { verifyJWT, renewJWT } from '@/utils/jwt';
 import {
   CallHandler,
   ExecutionContext,
@@ -7,6 +7,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
+import { Temporal } from 'temporal-polyfill';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -21,20 +22,17 @@ export class AuthInterceptor implements NestInterceptor {
 
     try {
       const accesstoken = await verifyJWT(token);
-      const currentTime = Date.now() / 1000;
+      const currentTime = Temporal.Now.instant().epochSeconds;
       const renewalThreshold = 84 * 60 * 60;
 
       if (accesstoken.exp - currentTime < renewalThreshold) {
-        const newAccessToken = await signJWT({
-          exp: currentTime + 168 * 60 * 60,
-          token: accesstoken.token,
-          iat: currentTime,
-        });
+        const newAccessToken = await renewJWT(token);
         res.cookie('token', newAccessToken, {
           signed: true,
           httpOnly: true,
           expires: new Date((currentTime + 168 * 60 * 60) * 1000),
         });
+        console.log(newAccessToken);
       }
     } catch (err) {
       console.warn(err);
