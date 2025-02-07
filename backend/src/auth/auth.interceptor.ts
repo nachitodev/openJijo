@@ -32,7 +32,6 @@ export class AuthInterceptor implements NestInterceptor {
           httpOnly: true,
           expires: new Date((currentTime + 168 * 60 * 60) * 1000),
         });
-        console.log(newAccessToken);
       }
     } catch (err) {
       console.warn(err);
